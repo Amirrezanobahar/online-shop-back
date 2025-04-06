@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import jwt from 'jsonwebtoken'
 
-const schema = new mongoose.schema({
+const userSchema = new Schema({
     email: {
         type: String,
         required: [true, 'ایمیل الزامی است'],
@@ -15,15 +16,14 @@ const schema = new mongoose.schema({
         minlength: [8, 'رمز عبور باید حداقل ۸ کاراکتر باشد'],
         select: false // عدم نمایش در خروجی‌های پیش‌فرض
     },
-    phone: {
+    username: {
         type: String,
-        required: [true, 'شماره تلفن الزامی است'],
+        required: [true, 'نام کاربری تلفن الزامی است'],
         unique: true,
-        match: [/^09[0-9]{9}$/, 'لطفا یک شماره تلفن معتبر وارد کنید']
     },
     firstName: {
         type: String,
-        trim: true
+        trim: true,
     },
     lastName: {
         type: String,
@@ -79,5 +79,16 @@ userSchema.pre('save', function (next) {
     next();
 })
 
-const model = mongoose.model('User', schema)
+userSchema.methods.generateAuthToken = function() {
+    return jwt.sign(
+      { 
+        id: this._id,
+        email: this.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
+  };
+
+const model = mongoose.model('User', userSchema)
 export default model; 
