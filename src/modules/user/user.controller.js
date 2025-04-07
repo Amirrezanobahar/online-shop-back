@@ -1,9 +1,12 @@
 import { registerValidator } from "./user.validator.js"
-import {model as userModel} from './../../models/user.js'
-import mongoose from "mongoose"
-
+import { model as userModel } from './../../models/user.js'
+import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+
+
 export const register = async (req, res, next) => {
+    console.log('hello ');
+
     try {
         const { username, password, email } = req.body
 
@@ -46,3 +49,70 @@ export const register = async (req, res, next) => {
         next(err);
     }
 }
+
+
+
+export const login = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+
+        // Validate input
+        if (!username || !password) {
+            return res.status(400).json({ 
+                success: false,
+                message: "نام کاربری و رمز عبور الزامی هستند" 
+            });
+        }
+
+        // Find user with proper query object
+        const user = await userModel.findOne({ 
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        }).select('+password').lean();
+
+        if (!user) {
+            return res.status(401).json({ 
+                success: false,
+                message: "نام کاربری یا ایمیل اشتباه است" 
+            });
+        }
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ 
+                success: false,
+                message: "رمز عبور اشتباه است" 
+            });
+        }
+
+        // Generate token
+        const token = jwt.sign(
+            { 
+                id: user._id,
+                email: user.email,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRE }
+        );
+
+        // Remove sensitive data before sending response
+        delete user.password;
+
+        res.status(200).json({
+            success: true,
+            token,
+            user
+        });
+
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({
+            success: false,
+            message: 'خطای سرور. لطفاً دوباره تلاش کنید'
+        });
+    }
+};

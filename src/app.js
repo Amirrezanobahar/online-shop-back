@@ -1,7 +1,9 @@
 import express from 'express'
 import userRoute from './modules/user/user.router.js'
+import cors from 'cors'
 
 export const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded())
 
