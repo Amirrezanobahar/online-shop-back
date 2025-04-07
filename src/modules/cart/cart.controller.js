@@ -1,5 +1,5 @@
 import { model as cartModel } from "../../models/cart.js"
-import {model as productModel} from './../../models/product.js'
+import  productModel from './../../models/product.js'
 
 export const sendCart = async (req, res, next) => {
 
@@ -48,8 +48,9 @@ export const addToCart = async (req, res, next)=>{
     try {
         const { productId, quantity, color, size } = req.body;
         const product = await productModel.findById(productId);
+        console.log(product);
         
-        const cart = await cartModel.findOne({ user: req.user.id });
+        const cart = await cartModel.findOne({ user: req.user._id });
         await cart.addItem(productId, quantity, color, size, product.price);
         
         res.json(cart);
