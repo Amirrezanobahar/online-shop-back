@@ -1,7 +1,7 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken'
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'ایمیل الزامی است'],
@@ -89,6 +89,6 @@ userSchema.methods.generateAuthToken = function() {
       { expiresIn: process.env.JWT_EXPIRE }
     );
   };
-
-const model = mongoose.model('User', userSchema)
-export default model; 
+// Add this before export
+console.log('Methods attached:', Object.keys(userSchema.methods))
+export const model = mongoose.model('User', userSchema)

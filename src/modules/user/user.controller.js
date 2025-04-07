@@ -1,14 +1,13 @@
 import { registerValidator } from "./user.validator.js"
-import userModel from './../../models/user.js'
+import {model as userModel} from './../../models/user.js'
+import mongoose from "mongoose"
 
 import bcrypt from 'bcrypt'
 export const register = async (req, res, next) => {
-
     try {
         const { username, password, email } = req.body
 
         const validator = await registerValidator.validate(req.body)
-
         if (validator.error) {
             return res.status(400).json({ message: validator.error.details[0].message })
         }
@@ -26,13 +25,12 @@ export const register = async (req, res, next) => {
             password: hashPassword,
         })
 
-        //todo : send email verification link
-        // const token =await userModel.generateAuthToken()
-
+        // CORRECT: Call generateAuthToken on the user INSTANCE
+        const token = user.generateAuthToken();  // No await needed unless it's async
 
         res.status(201).json({
             success: true,
-            // token,
+            token,  // Now sending the token
             user: {
                 id: user._id,
                 name: user.name,
@@ -41,14 +39,10 @@ export const register = async (req, res, next) => {
             }
         });
 
-
-
     } catch (err) {
         if (err.name === 'ValidationError') {
-
             res.send(err.message)
         }
         next(err);
     }
-
 }
