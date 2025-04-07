@@ -30,7 +30,7 @@ const cartItemSchema = new mongoose.Schema({
       default: Date.now
     }
   });
-  
+
 const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -56,5 +56,21 @@ const cartSchema = new mongoose.Schema({
         default: Date.now
       }
 })
+
+cartSchema.methods.addItem = async function(productId, quantity, color, size, price) {
+    const existingItem = this.items.find(item => 
+      item.product.toString() === productId && 
+      item.color === color && 
+      item.size === size
+    );
+  
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      this.items.push({ product: productId, quantity, color, size, price });
+    }
+  
+    return await this.save();
+  };
 
 export const model = mongoose.model('Cart', cartSchema)

@@ -1,5 +1,5 @@
 import express from "express";
-import {sendCart,create} from './cart.controller.js'
+import {sendCart,create,addToCart} from './cart.controller.js'
 import { auth } from "./../../middlewares/auth.js";
 
 const router = express.Router()
@@ -7,6 +7,10 @@ const router = express.Router()
 router.get('/',auth, sendCart)
 
 router.post('/create',auth,create)
+
+router.post('/addToCart',auth,addToCart)
+
+
 
 
 

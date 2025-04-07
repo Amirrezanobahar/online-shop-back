@@ -1,41 +1,59 @@
 import { model as cartModel } from "../../models/cart.js"
+import {model as productModel} from './../../models/product.js'
 
 export const sendCart = async (req, res, next) => {
 
-    try{
+    try {
         const userID = req.user._id
 
         const cart = await cartModel.findOne({ user: userID }, '-__v').populate('items', '-__v').populate('user', '-__v').lean()
-    
+
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" })
         }
-    
+
         res.send({ cart })
-    
-    }catch(err){
+
+    } catch (err) {
         next(err)
     }
-   
+
 }
 
 
 
 export const create = async (req, res, next) => {
 
-    try{
-        
-    const userID = req.user._id
+    try {
 
-    const cart = await cartModel.create({ user: userID })
+        const userID = req.user._id
 
-    if (!cart) {
-        return res.status(400).send({ message: 'Cart not created' })
-    }
-    res.send({ message: 'Cart created', cart: cart._id })
+        const cart = await cartModel.create({ user: userID })
 
-    }catch(err){
+        if (!cart) {
+            return res.status(400).send({ message: 'Cart not created' })
+        }
+        res.send({ message: 'Cart created', cart: cart._id })
+
+    } catch (err) {
         next(err)
     }
 
+}
+
+
+
+export const addToCart = async (req, res, next)=>{
+
+    try {
+        const { productId, quantity, color, size } = req.body;
+        const product = await productModel.findById(productId);
+        
+        const cart = await cartModel.findOne({ user: req.user.id });
+        await cart.addItem(productId, quantity, color, size, product.price);
+        
+        res.json(cart);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
 }
