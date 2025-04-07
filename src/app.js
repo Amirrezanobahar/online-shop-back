@@ -1,5 +1,6 @@
 import express from 'express'
 import userRoute from './modules/user/user.router.js'
+import cartRoute from './modules/cart/cart.router.js'
 import cors from 'cors'
 
 export const app = express()
@@ -13,6 +14,8 @@ app.use(express.urlencoded())
 
 
 app.use('/user', userRoute)
+
+app.use('/cart', cartRoute)
 
 
 app.use((req, res, next) => {
