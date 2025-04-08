@@ -11,24 +11,19 @@ export const createProduct = async (req, res) => {
 };
 
 // دریافت محصولات با فیلتر
-export const getProducts = async (req, res) => {
+export const getProduct = async (req, res, next) => {
   try {
-    const { category, minPrice, maxPrice, sort } = req.query;
-    
-    const query = {};
-    if (category) query.category = category;
-    if (minPrice || maxPrice) {
-      query.finalPrice = {};
-      if (minPrice) query.finalPrice.$gte = minPrice;
-      if (maxPrice) query.finalPrice.$lte = maxPrice;
+
+    const { id } = req.params
+
+    const product = await Product.findById(id).lean()
+
+    if (!product) {
+      return res.status(404).send({ error: ' product not found' })
     }
+    res.send(product);
 
-    const products = await Product.find(query)
-      .sort(sort || '-createdAt')
-      .populate('brand category');
-
-    res.json(products);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error)
   }
 };

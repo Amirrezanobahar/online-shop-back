@@ -58,14 +58,14 @@ export const login = async (req, res, next) => {
 
         // Validate input
         if (!username || !password) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                message: "نام کاربری و رمز عبور الزامی هستند" 
+                message: "نام کاربری و رمز عبور الزامی هستند"
             });
         }
 
         // Find user with proper query object
-        const user = await userModel.findOne({ 
+        const user = await userModel.findOne({
             $or: [
                 { username: username },
                 { email: username }
@@ -73,24 +73,24 @@ export const login = async (req, res, next) => {
         }).select('+password').lean();
 
         if (!user) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false,
-                message: "نام کاربری یا ایمیل اشتباه است" 
+                message: "نام کاربری یا ایمیل اشتباه است"
             });
         }
 
         // Verify password
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false,
-                message: "رمز عبور اشتباه است" 
+                message: "رمز عبور اشتباه است"
             });
         }
 
         // Generate token
         const token = jwt.sign(
-            { 
+            {
                 id: user._id,
                 email: user.email,
                 role: user.role
@@ -116,3 +116,22 @@ export const login = async (req, res, next) => {
         });
     }
 };
+
+export const userRole = async (req, res, next)=>{
+  
+    try{
+        const userID = req.user._id
+
+        if (!userID) {
+            return res.status(401).json({ success: false, message: 'شما باید وارد شوید' })
+        }
+    
+        const user = await userModel.findById(userID).lean()
+        if (!user) {
+            return res.status(401).json({ success: false, message: ' شما باید وارد شوید' })
+        }
+        res.send({ role: user.role })
+    }catch(err){
+        next(err)
+    }    
+}
