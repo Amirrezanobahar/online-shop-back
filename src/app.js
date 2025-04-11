@@ -3,7 +3,8 @@ import userRoute from './modules/user/user.router.js'
 import cartRoute from './modules/cart/cart.router.js'
 import productRoute from './modules/product/product.router.js'
 import cors from 'cors'
-import category from './modules/category/category.router.js'
+import categoryRoute from './modules/category/category.router.js'
+import brandRoute from './modules/brand/brand.router.js'
 export const app = express()
 app.use(cors())
 app.use(express.json())
@@ -20,7 +21,9 @@ app.use('/cart', cartRoute)
 
 app.use('/product', productRoute)
 
-app.use('/category', category)
+app.use('/category', categoryRoute)
+
+app.use('/brand', brandRoute)
 
 
 app.use((req, res, next) => {
