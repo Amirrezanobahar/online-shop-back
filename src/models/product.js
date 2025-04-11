@@ -103,7 +103,7 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  isNew: {
+  isNewProduct: {
     type: Boolean,
     default: true
   },
