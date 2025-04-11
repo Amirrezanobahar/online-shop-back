@@ -2,6 +2,7 @@ import Product from './../../models/product.js';
 
 // ایجاد محصول جدید
 export const createProduct = async (req, res) => {
+  
   try {
     const product = await Product.create(req.body);
     // todo validation 
