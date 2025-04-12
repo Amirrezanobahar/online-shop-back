@@ -135,3 +135,19 @@ export const userRole = async (req, res, next)=>{
         next(err)
     }    
 }
+
+export const allUsers = async (req, res, next) => {
+
+    try {
+
+       
+
+        const user = await userModel.find({}).lean()
+        if (!user) {
+            return res.status(401).json({ success: false, message: ' شما باید وارد شوید' })
+        }
+        res.send(user)
+    } catch (err) {
+        next(err)
+    }
+}

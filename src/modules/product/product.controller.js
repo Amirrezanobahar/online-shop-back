@@ -107,6 +107,8 @@ export const allProducts = async (req, res) => {
     const products = await Product.find(query)
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
+      .populate('brand')
+      .populate('category')
       .lean();
 
     const count = await Product.countDocuments(query);
