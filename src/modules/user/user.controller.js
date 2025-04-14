@@ -141,6 +141,8 @@ export const allUsers = async (req, res, next) => {
 
 // Delete user
 export const deleteUser = async (req, res, next) => {
+    console.log('delete user');
+    
     try {
         const userID = req.params.id;
 
