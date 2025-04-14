@@ -5,7 +5,7 @@ import productRoute from './modules/product/product.router.js'
 import cors from 'cors'
 import categoryRoute from './modules/category/category.router.js'
 import brandRoute from './modules/brand/brand.router.js'
-
+import eventRoute from './modules/event/event.router.js'
 export const app = express()
 
 app.use(cors())
@@ -20,6 +20,7 @@ app.use('/cart', cartRoute)
 app.use('/product', productRoute)
 app.use('/category', categoryRoute)
 app.use('/brand', brandRoute)
+app.use('/event', eventRoute)
 
 app.use((req, res, next) => {
     res.status(404).send("Sorry, this route does not exist")

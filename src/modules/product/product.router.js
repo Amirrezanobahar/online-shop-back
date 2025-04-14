@@ -1,7 +1,7 @@
 import express from "express";
 import { auth } from "./../../middlewares/auth.js";
 import {createProduct,deleteProduct,updateProduct,specialOffers,getProduct,allProducts} from './product.controller.js'
-import upload from '../../middlewares/upload.js'
+import upload from '../../middlewares/uploadProduct.js'
 
 
 const router = express.Router()
