@@ -121,6 +121,8 @@ export const allProducts = async (req, res) => {
 
 // دریافت محصول با ID
 export const getProduct = async (req, res) => {
+  console.log('hello world');
+  
   try {
     const product = await Product.findById(req.params.id)
       .populate('category', 'name')

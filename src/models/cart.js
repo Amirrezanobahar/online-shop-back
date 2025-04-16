@@ -57,6 +57,21 @@ const cartSchema = new mongoose.Schema({
       }
 })
 
+cartSchema.methods.addItem = function (productId, quantity, color, size, price) {
+  const existingItem = this.items.find(item => item.product.toString() === productId && item.color === color && item.size === size);
+  
+  if (existingItem) {
+    existingItem.quantity += quantity; // افزایش تعداد محصول
+  } else {
+    this.items.push({ product: productId, quantity, color, size, price });
+  }
+
+  return this.save(); // ذخیره‌سازی سبد خرید
+};
+
+const Cart = mongoose.model('Cart', cartSchema);
+export default Cart;
+
 cartSchema.methods.addItem = async function(productId, quantity, color, size, price) {
     const existingItem = this.items.find(item => 
       item.product.toString() === productId && 
