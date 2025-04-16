@@ -107,6 +107,8 @@ export const allProducts = async (req, res) => {
     const products = await Product.find(query)
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
+      .populate('brand')
+      .populate('category')
       .lean();
 
     const count = await Product.countDocuments(query);
@@ -119,6 +121,8 @@ export const allProducts = async (req, res) => {
 
 // دریافت محصول با ID
 export const getProduct = async (req, res) => {
+  console.log('hello world');
+  
   try {
     const product = await Product.findById(req.params.id)
       .populate('category', 'name')
@@ -149,5 +153,33 @@ export const deleteProduct = async (req, res) => {
     });
   } catch (error) {
     handleError(res, error);
+  }
+};
+
+export const specialOffers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, sortBy = 'discount', order = 'desc' } = req.query;
+
+    const query = {
+      discount: { $gte: 10 }, // حداقل ۱۰ درصد تخفیف
+      stock: { $gt: 0 } // محصولاتی که موجودی دارند
+    };
+
+    const sortOptions = {};
+    sortOptions[sortBy] = order === 'desc' ? -1 : 1;
+
+    const offers = await Product.find(query)
+      .sort(sortOptions)
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
+      .populate('brand', 'name')
+      .populate('category', 'name')
+      .lean();
+
+    const total = await Product.countDocuments(query);
+
+    res.send(offers);
+  } catch (error) {
+    handleError(res, error, 500);
   }
 };
